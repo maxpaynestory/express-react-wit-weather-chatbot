@@ -6,6 +6,21 @@ api.post('/message', (req, res) => {
     if(!req.body.username){
         return res.status(400).send("username not provided");
     }
+    if(!req.body.text){
+        return res.status(400).send("message text is missing");
+    }
+    const message = new Message({
+        username: req.body.username,
+        text: req.body.text
+    });
+    message.save(message)
+    .then((mess) => {
+        return res.json({yey:true});
+    })
+    .catch((err) => {
+        return res.status(500).send(err);
+    })
+
 });
 
 api.get('/message', (req, res) =>{
