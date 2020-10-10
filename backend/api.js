@@ -3,6 +3,10 @@ const api = express();
 const Message = require('./db/models/message');
 const request = require('request');
 
+createMessage = (username, text) => {
+    return `${username}: ${text}`
+}
+
 api.post('/message', (req, res) => {
     if(!req.body.username){
         return res.status(400).send("username not provided");
@@ -12,7 +16,7 @@ api.post('/message', (req, res) => {
     }
     const message = new Message({
         username: req.body.username,
-        text: req.body.text
+        text: createMessage(req.body.username ,req.body.text)
     });
     message.save(message)
     .then((mess) => {
@@ -23,6 +27,9 @@ api.post('/message', (req, res) => {
             }
         }
         request.get(url, options, (error, response, body) => {
+            if(error){
+                return res.status(500).send(error);
+            }
             const jsonObject = JSON.parse(body)
             const intents = jsonObject.intents;
             const entities = jsonObject.entities;
@@ -33,7 +40,27 @@ api.post('/message', (req, res) => {
                         const cityNames = entities['cityName:cityName'];
                         for (let city of cityNames){
                             if(city.name === "cityName" && city.confidence > minConfidence){
-                                return res.send(city.value);
+                                const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city.value)}&units=metric&appid=${process.env.OPEN_WEATHER_API_KEY}`;
+                                request.get(weatherUrl, (err1, res1, body1) => {
+                                    if(err1){
+                                        return res.status(500).send(err1);
+                                    }
+                                    const weatherObject = JSON.parse(body1);
+                                    const botText = `Weather in ${city.value} is ${weatherObject.main.temp} C`;
+                                    const botMessage = createMessage("Bot", botText);
+                                    const message2 = new Message({
+                                        username: "Bot",
+                                        text: botMessage
+                                    });
+                                    message2.save(message2)
+                                    .then((mess2) => {
+                                        return res.send(mess2);
+                                    })
+                                    .catch((err55) => {
+                                        return res.status(500).send(err55);
+                                    });
+
+                                });
                             }
                         }
                     }
