@@ -49,7 +49,7 @@ api.post('/message', (req, res) => {
                                     const botText = `Weather in ${city.value} is ${weatherObject.main.temp} C`;
                                     const botMessage = createMessage("Bot", botText);
                                     const message2 = new Message({
-                                        username: "Bot",
+                                        username: req.body.username,
                                         text: botMessage
                                     });
                                     message2.save(message2)
