@@ -37,7 +37,7 @@ api.post('/message', (req, res) => {
             for (let intent of intents){
                 if(intent.name === "weather" && intent.confidence > minConfidence){
                     if(!entities.hasOwnProperty('cityName:cityName')){
-                        return res.send(mess);
+                        return res.json([mess]);
                     }else{
                         const cityNames = entities['cityName:cityName'];
                         for (let city of cityNames){
@@ -56,12 +56,14 @@ api.post('/message', (req, res) => {
                                     });
                                     message2.save(message2)
                                     .then((mess2) => {
-                                        return res.send([mess, mess2]);
+                                        return res.json([mess, mess2]);
                                     })
                                     .catch((err55) => {
                                         return res.status(500).send(err55);
                                     });
                                 });
+                            }else{
+                                return res.json([mess]);
                             }
                         }
                     }
@@ -74,10 +76,10 @@ api.post('/message', (req, res) => {
                     });
                     message2.save(message2)
                     .then((mess2) => {
-                        return res.send([mess, mess2]);
+                        return res.json([mess, mess2]);
                     })
                     .catch((err55) => {
-                        return res.status(500).send(err55);
+                        return res.status(500).json(err55);
                     });
                 } else if(intent.name === "depart" && intent.confidence > minConfidence) {
                     const botText = `See you later ${req.body.username}`;
@@ -88,13 +90,13 @@ api.post('/message', (req, res) => {
                     });
                     message2.save(message2)
                     .then((mess2) => {
-                        return res.send([mess, mess2]);
+                        return res.json([mess, mess2]);
                     })
                     .catch((err55) => {
-                        return res.status(500).send(err55);
+                        return res.status(500).json(err55);
                     });
                 }else{
-                    return res.send([mess]);
+                    return res.json([mess]);
                 }
             }
         });
@@ -112,7 +114,7 @@ api.get('/message', (req, res) =>{
     const username = req.query.username;
     Message.find({username: username})
     .then((messages) => {
-        res.send(messages);
+        res.json(messages);
     })
     .catch((err) => {
         res.status(400).send(err);

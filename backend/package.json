@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start:dev": "nodemon server.js",
-    "test": "mocha --recursive --exit"
+    "test": "mocha test/**/*.js --exit"
   },
   "author": "Usama Ahmed",
   "license": "ISC",
@@ -21,6 +21,8 @@
     "supertest": "^5.0.0"
   },
   "devDependencies": {
+    "mongodb-memory-server": "^6.9.2",
+    "nock": "^13.0.4",
     "nodemon": "^2.0.4"
   }
 }
