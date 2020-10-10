@@ -36,7 +36,9 @@ api.post('/message', (req, res) => {
             const minConfidence = process.env.MIN_CONFIDENCE
             for (let intent of intents){
                 if(intent.name === "weather" && intent.confidence > minConfidence){
-                    if(entities.hasOwnProperty('cityName:cityName')){
+                    if(!entities.hasOwnProperty('cityName:cityName')){
+                        return res.send(mess);
+                    }else{
                         const cityNames = entities['cityName:cityName'];
                         for (let city of cityNames){
                             if(city.name === "cityName" && city.confidence > minConfidence){
@@ -46,7 +48,7 @@ api.post('/message', (req, res) => {
                                         return res.status(500).send(err1);
                                     }
                                     const weatherObject = JSON.parse(body1);
-                                    const botText = `Weather in ${city.value} is ${weatherObject.main.temp} C`;
+                                    const botText = `Weather in ${city.value} is ${Math.floor(weatherObject.main.temp)} C`;
                                     const botMessage = createMessage("Bot", botText);
                                     const message2 = new Message({
                                         username: req.body.username,
@@ -54,16 +56,45 @@ api.post('/message', (req, res) => {
                                     });
                                     message2.save(message2)
                                     .then((mess2) => {
-                                        return res.send(mess2);
+                                        return res.send([mess, mess2]);
                                     })
                                     .catch((err55) => {
                                         return res.status(500).send(err55);
                                     });
-
                                 });
                             }
                         }
                     }
+                }else if(intent.name === "greet" && intent.confidence > minConfidence) {
+                    const botText = `Hello ${req.body.username}`;
+                    const botMessage = createMessage("Bot", botText);
+                    const message2 = new Message({
+                        username: req.body.username,
+                        text: botMessage
+                    });
+                    message2.save(message2)
+                    .then((mess2) => {
+                        return res.send([mess, mess2]);
+                    })
+                    .catch((err55) => {
+                        return res.status(500).send(err55);
+                    });
+                } else if(intent.name === "depart" && intent.confidence > minConfidence) {
+                    const botText = `See you later ${req.body.username}`;
+                    const botMessage = createMessage("Bot", botText);
+                    const message2 = new Message({
+                        username: req.body.username,
+                        text: botMessage
+                    });
+                    message2.save(message2)
+                    .then((mess2) => {
+                        return res.send([mess, mess2]);
+                    })
+                    .catch((err55) => {
+                        return res.status(500).send(err55);
+                    });
+                }else{
+                    return res.send([mess]);
                 }
             }
         });
