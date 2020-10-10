@@ -3,3 +3,5 @@ docker-mongodb/mongodb-data/*
 
 # exception to the rule
 !docker-mongodb/mongodb-data/.gitkeep
+
+node_modules
