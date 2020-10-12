@@ -16,17 +16,10 @@ class App extends React.Component {
     this.onUsernameChanged = this.onUsernameChanged.bind(this);
     this.onSendBtnClicked = this.onSendBtnClicked.bind(this);
     this.onQuestionChanged = this.onQuestionChanged.bind(this);
+    this.onEnterPressed = this.onEnterPressed.bind(this);
+    this.sendQuestion = this.sendQuestion.bind(this);
   }
-  scrollToBottom(){
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
-  }
-  onQuestionChanged(e) {
-    this.setState({
-      question: e.target.value,
-    });
-  }
-  onSendBtnClicked(e) {
-    e.preventDefault();
+  sendQuestion(){
     const { question, username, messages } = this.state;
     if (question.length > 0) {
       axios
@@ -47,6 +40,22 @@ class App extends React.Component {
         question: "",
       });
     }
+  }
+  onEnterPressed(e){
+    e.preventDefault();
+    this.sendQuestion();
+  }
+  scrollToBottom(){
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  }
+  onQuestionChanged(e) {
+    this.setState({
+      question: e.target.value,
+    });
+  }
+  onSendBtnClicked(e) {
+    e.preventDefault();
+    this.sendQuestion();
   }
   onJoinBtnClicked(e) {
     e.preventDefault();
@@ -130,7 +139,7 @@ class App extends React.Component {
               </Row>
               <Row>
                 <Col>
-                  <Form>
+                  <Form onSubmit={this.onEnterPressed}>
                     <Form.Group controlId="formBasicEmail">
                       <Row>
                         <Col sm={11}>
@@ -139,6 +148,7 @@ class App extends React.Component {
                             placeholder="Enter question"
                             value={question}
                             onChange={this.onQuestionChanged}
+                            autoComplete="off"
                           />
                         </Col>
                         <Col sm={1}>
