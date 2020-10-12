@@ -109,4 +109,78 @@ describe('POST /api/message', () => {
         nock.removeInterceptor(mynock);
     });
 
+    it("test intent greet", (done) => {
+        const witresponse = {
+            intents:[
+                {
+                    name: "greet",
+                    confidence: 0.8
+                }
+            ],
+            entities:{
+                "cityName:asdsadas":[
+
+                ]
+            }
+        }
+        const question = "Hello";
+        const username = "myname";
+        const mynock = nock('https://api.wit.ai')
+        .get(`/message?v=20201010&q=${encodeURIComponent(question)}`)
+        .reply(200, witresponse);
+
+        request(app).post('/api/message')
+        .send({
+            username: username,
+            text: question
+        })
+        .then((res) => {
+            expect(res.status).to.equal(200);
+            expect(res.body.length).to.equal(2);
+            const mess = res.body[1];
+            expect(mess.text).to.equal(`Bot: Hello ${username}`);
+            done();
+        })
+        .catch((err) => done(err));
+
+        nock.removeInterceptor(mynock);
+    });
+
+    it("test intent depart", (done) => {
+        const witresponse = {
+            intents:[
+                {
+                    name: "depart",
+                    confidence: 0.8
+                }
+            ],
+            entities:{
+                "cityName:asdsadas":[
+
+                ]
+            }
+        }
+        const question = "Bye";
+        const username = "myname";
+        const mynock = nock('https://api.wit.ai')
+        .get(`/message?v=20201010&q=${encodeURIComponent(question)}`)
+        .reply(200, witresponse);
+
+        request(app).post('/api/message')
+        .send({
+            username: username,
+            text: question
+        })
+        .then((res) => {
+            expect(res.status).to.equal(200);
+            expect(res.body.length).to.equal(2);
+            const mess = res.body[1];
+            expect(mess.text).to.equal(`Bot: See you later ${username}`);
+            done();
+        })
+        .catch((err) => done(err));
+
+        nock.removeInterceptor(mynock);
+    });
+
   })
