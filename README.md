@@ -22,7 +22,7 @@ to run backend and frontend
 ## Testing ##
 backend api is covered with test. In order to run tests
 ```
-npm run test
+npm test
 ```
 ## Credentials ##
 Backend uses credentials from wit.ai and openweatherapi, which i will revoke so will they will stop working after a few days.
