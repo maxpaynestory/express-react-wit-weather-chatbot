@@ -233,4 +233,51 @@ describe("POST /api/message", () => {
     nock.removeInterceptor(mynock1);
     nock.removeInterceptor(mynock2);
   });
+
+  it("test weather api return a malformed response", (done) => {
+    const witresponse = {
+        intents: [
+          {
+            name: "weather",
+            confidence: 0.8,
+          },
+        ],
+        entities: {
+          "cityName:cityName": [
+            {
+              name: "cityName",
+              value: "Berlin",
+              confidence: 0.8,
+            },
+          ],
+        },
+      };
+      const question = "what is the weather in Berlin?";
+      const username = "myname";
+      const mynock1 = nock("https://api.wit.ai")
+        .get(`/message?v=20201010&q=${encodeURIComponent(question)}`)
+        .reply(200, witresponse);
+  
+      const mynock2 = nock("https://api.openweathermap.org")
+        .get("/data/2.5/weather?q=Berlin&units=metric&appid=weatherapi")
+        .reply(200, {
+            some:"asdadasd"
+        });
+  
+      request(app)
+        .post("/api/message")
+        .send({
+          username: username,
+          text: question,
+        })
+        .then((res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.length).to.equal(1);
+          done();
+        })
+        .catch((err) => done(err));
+  
+      nock.removeInterceptor(mynock1);
+      nock.removeInterceptor(mynock2);
+  });
 });
