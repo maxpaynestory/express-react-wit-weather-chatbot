@@ -9,9 +9,14 @@ class App extends React.Component{
     };
   }
   render(){
+    const {joined}  = this.state;
     return (
       <div className="App">
-        kia bakwas hai
+        {!joined ?
+        <p>Show join box</p>
+        :
+        <p>Show message list</p>
+        }
       </div>
     );
   }
