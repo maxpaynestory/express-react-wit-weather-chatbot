@@ -26,8 +26,8 @@ api.post('/message', (req, res) => {
                 'bearer' : process.env.WIT_AI_TOKEN
             }
         }
-        request.get(url, options, (error, response, body) => {
-            if(error){
+        request.get(url, options, (error, res2, body) => {
+            if(error || res2.statusCode != 200){
                 return res.status(500).send(error);
             }
             const jsonObject = JSON.parse(body)
@@ -44,7 +44,7 @@ api.post('/message', (req, res) => {
                             if(city.name === "cityName" && city.confidence > minConfidence){
                                 const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city.value)}&units=metric&appid=${process.env.OPEN_WEATHER_API_KEY}`;
                                 request.get(weatherUrl, (err1, res1, body1) => {
-                                    if(err1){
+                                    if(err1 || res1.statusCode != 200){
                                         return res.json([mess]);
                                     }
                                     const weatherObject = JSON.parse(body1);
