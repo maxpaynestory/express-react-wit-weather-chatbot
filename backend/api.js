@@ -45,9 +45,12 @@ api.post('/message', (req, res) => {
                                 const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city.value)}&units=metric&appid=${process.env.OPEN_WEATHER_API_KEY}`;
                                 request.get(weatherUrl, (err1, res1, body1) => {
                                     if(err1){
-                                        return res.status(500).send(err1);
+                                        return res.json([mess]);
                                     }
                                     const weatherObject = JSON.parse(body1);
+                                    if(!weatherObject.hasOwnProperty("main")){
+                                        return res.json([mess]);
+                                    }
                                     const botText = `Weather in ${city.value} is ${Math.floor(weatherObject.main.temp)} C`;
                                     const botMessage = createMessage("Bot", botText);
                                     const message2 = new Message({
