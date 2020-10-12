@@ -1,4 +1,6 @@
 process.env.NODE_ENV = 'test';
+process.env.WIT_AI_TOKEN = 'something';
+process.env.MIN_CONFIDENCE = 0.7;
 const expect = require('chai').expect;
 const request = require('supertest');
 
